@@ -1,5 +1,0 @@
-Function getTable(tbl As ListObject)
-
-getTable = "[" & tbl.Parent.Name & "$" & tbl.Range.Address(False, False) & "]"
-
-End Function
