@@ -1,0 +1,42 @@
+Sub exportToXl(ByRef ufm As Variant)
+Dim wb As Workbook
+Dim sqlString As String
+Dim initialName As String
+Dim reportFileSavePath As Variant
+Dim objxl As Object
+Dim counter As Integer, i As Integer
+
+sqlString = ufm.txt_sqlString.Text
+initialName = "Report"
+reportFileSavePath = Application.GetSaveAsFilename(initialName, "Excel Files (*.xlsx), *xlsx")
+
+Call connection_op
+rs.Open sqlString, conn, adOpenStatic, adLockReadOnly
+
+If reportFileSavePath <> False Then
+    Set wb = Workbooks.Add
+    With wb
+        .SaveAs reportFileSavePath
+        .Close
+    End With
+
+
+    Set objxl = CreateObject("excel.application")
+    With objxl
+        .Visible = True
+        .Workbooks.Open reportFileSavePath
+        
+        counter = rs.fields.Count - 1
+        For i = 0 To counter
+        .ActiveSheet.Cells(1, 1 + i) = rs.fields(i).Name
+        Next i
+        
+        .ActiveSheet.Range("A2").CopyFromRecordset rs
+        .ActiveWorkbook.Save
+    End With
+End If
+
+
+rs.Close
+conn.Close
+End Sub
