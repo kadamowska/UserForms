@@ -1,0 +1,46 @@
+Sub toLvw(fld As String, tbl As String, ufm As Variant)
+Dim counter, i As Integer
+Dim lView As ListItem
+
+Call connection_op
+sql_string = "select " & fld & " from " & tbl
+ufm.txt_sqlString.Text = sql_string
+'MsgBox sql_string
+Set rs = New ADODB.Recordset
+
+rs.Open sql_string, conn, adOpenKeyset, adLockPessimistic
+
+counter = rs.fields.Count - 1
+
+ufm.lvw_stock.ColumnHeaders.Clear
+
+For i = 0 To counter
+ufm.lvw_stock.ColumnHeaders.Add , , rs.fields(i).Name
+Next i
+
+With ufm.lvw_stock
+    .ListItems.Clear
+    
+    'EOF = true kiedy kod odnosi się do rekordu, którego nie ma (po ostatnim z danej grupy rekodów, w poniższym przypadku do nieistniejącej kolumny)
+    Do While Not rs.EOF
+        'ustawienie pierwszej kolumny jako listitem o nazwie odnoszącej się do wartości w polu grs.fields(0)
+        Set lView = .ListItems.Add(, , rs.fields(0).Value)
+        'ustaiwnie subitems (pozostałe kolumny w danym rekordzie), przyporządkowane do danego listitem
+        For i = 1 To rs.fields.Count - 1
+            lView.SubItems(i) = IIf(IsNull(rs.fields(i).Value), "-", rs.fields(i).Value)
+        Next i
+        
+        rs.MoveNext
+    Loop
+    
+    .FullRowSelect = True
+    .Gridlines = True
+    .View = lvwReport
+    
+End With
+
+
+rs.Close
+conn.Close
+
+End Sub
