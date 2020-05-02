@@ -1,0 +1,19 @@
+Public conn As ADODB.connection
+Public rs As ADODB.Recordset
+Public Const myPath = "C:mypath\excelFile.xlsm"
+Public dbPath As String
+
+
+Public Function connection_op()
+
+On Error Resume Next
+Set conn = New ADODB.connection
+With conn
+ .Provider = "Microsoft.ACE.OLEDB.12.0;"
+ .ConnectionString = "Data Source=" & myPath & ";" & _
+"Extended Properties=""Excel 12.0 Macro; HDR=YES"";"
+.Open
+End With
+
+
+End Function
