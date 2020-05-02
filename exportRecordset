@@ -1,3 +1,4 @@
+'ufm = userform name
 Sub exportToXl(ByRef ufm As Variant)
 Dim wb As Workbook
 Dim sqlString As String
