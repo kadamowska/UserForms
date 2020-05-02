@@ -21,11 +21,11 @@ Next i
 With ufm.lvw_stock
     .ListItems.Clear
     
-    'EOF = true kiedy kod odnosi się do rekordu, którego nie ma (po ostatnim z danej grupy rekodów, w poniższym przypadku do nieistniejącej kolumny)
+    'EOF = true relates to not existing field (the one after last)
     Do While Not rs.EOF
-        'ustawienie pierwszej kolumny jako listitem o nazwie odnoszącej się do wartości w polu grs.fields(0)
+        'setting first collumn as listitems
         Set lView = .ListItems.Add(, , rs.fields(0).Value)
-        'ustaiwnie subitems (pozostałe kolumny w danym rekordzie), przyporządkowane do danego listitem
+        'setting values of fields (from 1) as subitems of listitem
         For i = 1 To rs.fields.Count - 1
             lView.SubItems(i) = IIf(IsNull(rs.fields(i).Value), "-", rs.fields(i).Value)
         Next i
