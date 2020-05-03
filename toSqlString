@@ -1,0 +1,90 @@
+'Data from some controls transform to SQL string
+
+Sub to_sqlString()
+Dim fieldsSelected As String
+Dim fromWhereString As String
+Dim item As String, itemName As String
+Dim date1 As String, date2 As String
+Dim countedItems As Integer, i As Integer, countedFields As Integer, countedName As Integer
+
+countedFields = userform_name.listbox_fields.ListCount - 1
+countedItems = userform_name.listbox_item.ListCount  - 1
+countedName = userform_name.listbox_name.ListCount  - 1
+
+date1 = userform_name.textbox_date1.Text
+date2 = userform_name.textbox_date2.Text
+
+
+If userform_name.optionbutton_one = True Then
+    fromWhereString = getTable(Sheets("Sheet1").ListObjects(1))
+    Else
+    fromWhereString = getTable(Sheets("Sheet2").ListObjects(1))
+End If
+
+For i = 0 To countedFields
+    If userform_name.listbox_fields.Selected(i) Then
+        fieldsSelected = fieldsSelected & ", [" & userform_name.listbox_fields.List(i) & "]"
+    End If
+Next i
+
+
+For i = 0 To countedItem
+    If userform_name.listbox_items.Selected(i) Then
+        item = item & "[Column_name1] = '" & userform_name.listbox_item.List(i) & "' or "
+    End If
+Next i
+
+For i = 0 To countedName
+    If userform_name.listbox_name.Selected(i) Then
+        itemName = itemName & "[Culumn_name2] = '" & userform_name.listbox_name.List(i) & "' or "
+    End If
+Next i
+
+
+If item <> "" Then
+    item = " where (" & Left(item, Len(item) - 4) & ")"
+    fromWhereString = fromWhereString & item
+End If
+
+If itemName <> "" Then
+    If item = "" Then
+        fromWhereString = fromWhereString & " where (" & Left(itemName, Len(itemName) - 4) & ")"
+    Else
+        fromWhereString = fromWhereString & " or (" & Left(itemName, Len(itemName) - 4) & ")"
+    End If
+End If
+
+
+If date1 <> "" Then
+    If item = "" And itemName = ""  Then
+        fromWhereString = fromWhereString & " where [ColumnDate] between CDate('" & date1 & "') and CDate('" & date2 & "')"
+    Else
+        fromWhereString = fromWhereString & " and [ColumnDate] between CDate('" & date1 & "') and CDate('" & date2 & "')"
+    End If
+End If
+
+
+'toLvw - look at fillingListView
+
+If fieldsSelected = "" Then
+    If userform_name.checkbox = False Then
+    Call toLvw("*", fromWhereString, userform_name)
+    else
+    MsgBox ""
+    Exit Sub
+    End If
+Else
+    fieldsSelected = Right(fieldsSelected, Len(fieldsSelected) - 2)
+    If userform_name.checkbox = False Then
+    Call toLvw(fieldsSelected, fromWhereString, userform_name)
+    Else
+    Call toLvw(fieldsSelected & " ,count([Column1]) as [Counted column 1]", fromWhereString & " group by " & fieldsSelected, userform_name)
+    End If
+End If
+End Sub
+
+'Get data from listObjects
+
+Function getTable(tbl As ListObject)
+getTable = "[" & tbl.Parent.Name & "$" & tbl.Range.Address(False, False) & "]"
+End Function
