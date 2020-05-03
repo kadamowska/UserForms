@@ -4,7 +4,7 @@ Dim lView As ListItem
 
 Call connection_op
 sql_string = "select " & fld & " from " & tbl
-ufm.txt_sqlString.Text = sql_string
+ufm.textbox_sqlString.Text = sql_string
 'MsgBox sql_string
 Set rs = New ADODB.Recordset
 
@@ -12,13 +12,13 @@ rs.Open sql_string, conn, adOpenKeyset, adLockPessimistic
 
 counter = rs.fields.Count - 1
 
-ufm.lvw_stock.ColumnHeaders.Clear
+ufm.listview1.ColumnHeaders.Clear
 
 For i = 0 To counter
-ufm.lvw_stock.ColumnHeaders.Add , , rs.fields(i).Name
+ufm.listview1.ColumnHeaders.Add , , rs.fields(i).Name
 Next i
 
-With ufm.lvw_stock
+With ufm.listview1
     .ListItems.Clear
     
     'EOF = true relates to not existing field (the one after last)
